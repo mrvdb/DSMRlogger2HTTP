@@ -167,6 +167,13 @@ typedef struct {
     float     GasDelivered;
 } dataStruct;
 
+// We need some time keeping stuff for DSMR22
+static const char ntpServerName[] = "nl.pool.ntp.org";
+const  int        timeZone = 2; // Offset UTC based?
+WiFiUDP           Udp;
+unsigned int      localport = 8888;
+time_t            getNtpTime ();
+
 static dataStruct hoursDat[10];    // 0 + 1-8
 static dataStruct weekDat[9];      // 0 - 6 (0=sunday)
 static dataStruct monthsDat[27];   // 0 + year1 1 t/m 12 + year2 1 t/m 12
@@ -407,8 +414,19 @@ void processData(MyData DSMRdata) {
   //escapeJson(DSMRdata.identification.c_str(), cID2);
   //Identification                    = String(cID2);
     escapeJson(DSMRdata.identification.c_str(), Identification);
-    P1_Version                        = DSMRdata.p1_version;
-    pTimestamp                        = DSMRdata.timestamp;
+    if (DSMRdata.p1_version_present) {
+            P1_Version                = DSMRdata.p1_version;
+    } else {
+            // Known to happen with Kamstrup 382
+            P1_Version                = "UnKnown";
+    }
+    if (DSMRdata.timestamp_present) {
+            pTimestamp                = DSMRdata.timestamp;
+    } else {
+            // We do need a notion of time to be able to log, so just take current
+            sprintf(cMsg, "%02d%02d%02d%02d%02d15S", year()-2000, month (), day (), hour (), minute ());
+            pTimestamp = String (cMsg);
+    }
     if (DSMRdata.equipment_id_present) {
             Equipment_Id              = DSMRdata.equipment_id;
     } else  Equipment_Id              = "UnKnown";
@@ -638,6 +656,17 @@ void setup() {
   TelnetStream.flush();
   if (debug) Serial.println("\nTelnet server started ..");
   delay(500);
+
+    // Sync time
+  Udp.begin (localport);
+  Serial.println ("Waiting for time sync...");
+  TelnetStream.println ("Waiting for sync...");
+  do {
+    TelnetStream.println ("Waiting for sync...");
+    delay (1000);
+  } while (!getNtpTime ());
+  setSyncProvider (getNtpTime);
+  setSyncInterval (300); // Every 5 minutes?
 
   //============= configure OTA (minimal) ====================
   ArduinoOTA.setHostname(HOSTNAME);   // defaults to esp8266-[ChipID]
