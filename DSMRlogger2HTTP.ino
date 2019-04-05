@@ -136,7 +136,8 @@ using MyData = ParsedData<
   /* uint16_t */      ,gas_device_type
   /* String */        ,gas_equipment_id
 //  /* uint8_t */       ,gas_valve_position
-  /* TimestampedFixedValue */ ,gas_delivered
+//  /* TimestampedFixedValue */ ,gas_delivered
+  /* DoubleLineTimestampedFixedValue */ , gas_delivered2
 //  /* uint16_t */      ,thermal_device_type
 //  /* String */        ,thermal_equipment_id
 //  /* uint8_t */       ,thermal_valve_position
@@ -474,8 +475,8 @@ void processData(MyData DSMRdata) {
     if (DSMRdata.gas_equipment_id_present) {
             GasEquipment_Id           = DSMRdata.gas_equipment_id;
     } else  GasEquipment_Id           = "UnKnown";
-    if (DSMRdata.gas_delivered_present) {
-            GasDelivered              = (float)DSMRdata.gas_delivered;
+    if (DSMRdata.gas_delivered2_present) {
+            GasDelivered              = (float)DSMRdata.gas_delivered2;
     } else  GasDelivered              = 0.0;
 
     EnergyDelivered   = EnergyDeliveredTariff1 + EnergyDeliveredTariff2; 
