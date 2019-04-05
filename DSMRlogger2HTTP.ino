@@ -830,6 +830,8 @@ void loop () {
           if (Verbose) {
             DSMRdata.applyEach(showValues());
             printData();
+          } else {
+            delay (600); // Why: this makes it so much more reliable on Kamstrup 382 (otherwise ~ 10% telegram errors)
           }
         } else {                                    // Parser error, print error
           TelnetStream.printf("Parse error %s\r\n", DSMRerror.c_str());
