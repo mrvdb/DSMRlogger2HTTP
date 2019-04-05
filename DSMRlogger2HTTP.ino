@@ -822,7 +822,7 @@ void loop () {
 
         TelnetStream.println("\n==================================================================\r");
         TelnetStream.printf("read telegram [%d]\r\n", ++telegramCount);
-        Serial.printf("read telegram [%d]\n", ++telegramCount);
+        Serial.printf("read telegram [%d]\n", telegramCount);
 
         if (reader.parse(&DSMRdata, &DSMRerror)) {  // Parse succesful, print result
           digitalWrite(BUILTIN_LED, LED_OFF);
