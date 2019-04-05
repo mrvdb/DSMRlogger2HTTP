@@ -574,7 +574,7 @@ void processData(MyData DSMRdata) {
 //===========================================================================================
 void setup() {
 //===========================================================================================
-  Serial.begin(115200, SERIAL_8N1);
+  Serial.begin(9600, SERIAL_7E1);
   pinMode(BUILTIN_LED, OUTPUT);
   for(int I=0; I<5; I++) {
     digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
